@@ -84,7 +84,7 @@ public class GameController {
      * @param y      y position of the new disc
      * @return true if move is valid
      */
-    public boolean checkValidMove(int player, int x, int y) {
+    public boolean makeMove(int player, int x, int y) {
 
         if (x > board.length || y > board.length) {
             return false;
@@ -155,7 +155,7 @@ public class GameController {
             } else if (board[nextX][nextY] == player) {
 
                 if (hasFoundOpposite) {
-                    makeMoves(player, x, y, direction);     //Probably needs to be moved somehow when AI is implemented
+                    flipDiscs(player, x, y, direction);     //Probably needs to be moved somehow when AI is implemented
                     return true;
 
                 } else {
@@ -177,7 +177,7 @@ public class GameController {
      * @param y         y position of the new disc
      * @param direction an array {x,y} where x,y is a number between -1 and 1 indicating the direction in x,y axis respectively
      */
-    public void makeMoves(int player, int x, int y, int[] direction) {
+    public void flipDiscs(int player, int x, int y, int[] direction) {
         int newX = x, newY = y;
 
         while (board[newX][newY] == getOpposite(player)) {
@@ -190,6 +190,9 @@ public class GameController {
     }
 
     /**
+     *
+     * ---needs to be changed---
+     *
      * returns list of all moves available to the player based on a new disc position
      * intended to be used at some point in the AI decision process
      *
