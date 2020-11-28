@@ -216,7 +216,7 @@ public class GameController {
         while (board[newY][newX] == getOpposite(move.getPlayer())) {
             board[newY][newX] = move.getPlayer();
 
-            System.out.println("Flipped disc on row: " + newX + " column: " + newY);
+            //System.out.println("Flipped disc on row: " + newX + " column: " + newY);
 
             newX += direction[0];
             newY += direction[1];
