@@ -1,5 +1,7 @@
 package Controller;
 
+import Model.Move;
+
 import java.util.ArrayList;
 
 public class GameController {
@@ -79,40 +81,36 @@ public class GameController {
     /**
      * Checks if a move is valid or not
      *
-     * @param player current player
-     * @param x      x position of the new disc
-     * @param y      y position of the new disc
+     * @param move current player and x,y position of the new disc
      * @return true if move is valid
      */
-    public boolean makeMove(int player, int x, int y) {
+    public boolean makeMove(Move move) {
 
-        if (x > board.length || y > board.length) {
+        if (move.getX() > board.length || move.getY() > board.length) {
             return false;
-        } else if (x < 0 || y < 0) {
+        } else if (move.getX() < 0 || move.getY() < 0) {
             return false;
-        } else if (board[x][y] != EMPTY) {
+        } else if (board[move.getX()][move.getY()] != EMPTY) {
             return false;
-        } else if (board[x][y] == getOpposite(player)) {
+        } else if (board[move.getX()][move.getY()] == getOpposite(move.getPlayer())) {
             return false;
         }
 
-        return checkIfAnyDirectionIsValid(player, x, y);
+        return checkIfAnyDirectionIsValid(move);
 
     }
 
     /**
      * Checks if any direction to flip discs is valid
      *
-     * @param player current player
-     * @param x      x position of the new disc
-     * @param y      y position of the new disc
+     * @param move current player and x,y position of the new disc
      * @return true if the player can flip discs in at least one direction
      */
-    private boolean checkIfAnyDirectionIsValid(int player, int x, int y) {
+    private boolean checkIfAnyDirectionIsValid(Move move) {
         boolean hasFoundValidDirection = false;
 
         for (int[] direction : directions) {
-            if (checkIfDirectionIsValid(player, x, y, direction)) {
+            if (checkIfDirectionIsValid(move, direction)) {
                 hasFoundValidDirection = true;
             }
         }
@@ -124,16 +122,14 @@ public class GameController {
     /**
      * checks if the current player can flip discs in a certain direction
      *
-     * @param player    current player
-     * @param x         x position of the new disc
-     * @param y         y position of the new disc
+     * @param move current player and x,y position of the new disc
      * @param direction an array {x,y} where x,y is a number between -1 and 1 indicating the direction in x,y axis respectively
      * @return true if its possible to flip discs in this direction
      */
-    private boolean checkIfDirectionIsValid(int player, int x, int y, int[] direction) {
+    private boolean checkIfDirectionIsValid(Move move, int[] direction) {
 
         boolean hasFoundOpposite = false;
-        int nextX = x, nextY = y;
+        int nextX = move.getX(), nextY = move.getY();
 
         for (int i = 0; i < board.length; i++) {
 
@@ -149,13 +145,13 @@ public class GameController {
             }
 
 
-            if (board[nextX][nextY] == getOpposite(player)) {
+            if (board[nextX][nextY] == getOpposite(move.getPlayer())) {
                 hasFoundOpposite = true;
 
-            } else if (board[nextX][nextY] == player) {
+            } else if (board[nextX][nextY] == move.getPlayer()) {
 
                 if (hasFoundOpposite) {
-                    flipDiscs(player, x, y, direction);     //Probably needs to be moved somehow when AI is implemented
+                    flipDiscs(move, direction);     //Probably needs to be moved somehow when AI is implemented
                     return true;
 
                 } else {
@@ -171,17 +167,14 @@ public class GameController {
 
     /**
      * Flips discs on the board in a given direction
-     *
-     * @param player    current player
-     * @param x         x position of the new disc
-     * @param y         y position of the new disc
+     * @param move current player and x,y position of the new disc
      * @param direction an array {x,y} where x,y is a number between -1 and 1 indicating the direction in x,y axis respectively
      */
-    public void flipDiscs(int player, int x, int y, int[] direction) {
-        int newX = x, newY = y;
+    public void flipDiscs(Move move, int[] direction) {
+        int newX = move.getX(), newY = move.getY();
 
-        while (board[newX][newY] == getOpposite(player)) {
-            board[newX][newY] = player;
+        while (board[newX][newY] == getOpposite(move.getPlayer())) {
+            board[newX][newY] = move.getPlayer();
 
             newX += direction[0];
             newY += direction[1];
@@ -208,7 +201,7 @@ public class GameController {
                     continue;
                 }
 
-                if (checkIfAnyDirectionIsValid(player, i, j)) {
+                if (checkIfAnyDirectionIsValid(new Move(player, i, j))) {
                     int[] validMove = {i, j};
                     availableMoves.add(validMove);
                 }
