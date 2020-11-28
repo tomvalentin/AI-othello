@@ -1,46 +1,33 @@
 package View;
 
+import Model.Move;
+
 import java.util.Scanner;
 
 public class UIController {
     Scanner reader = new Scanner(System.in);
-    private int[][] board;
+    //private int[][] board;
 
     /**
      * Takes an 2D array as input for the gameboard
-     * @param board
      */
-    public UIController(int[][] board){
-        this.board = board;
-        printBoard();
-        gameThread();
+    public UIController(){
+        //this.board = board;
+        //printBoard();
     }
 
-    public int[] promptPlayer(){
+    public Move promptPlayer(){
         System.out.println("Make a move, COLUMN (0-7): ");
         int column = reader.nextInt();
         System.out.println("Make a move, ROW (0-7): ");
         int row = reader.nextInt();
-        return new int[]{row, column};
+        return new Move(1, column, row);
     }
 
-    public void gameThread(){
-        while(true){
-            promptPlayer(); //prompt human
-            printBoard();
-
-            //prompt AI
-//            System.out.println("Player 1 Make a move, COLUMN (0-7): ");
-//            column = reader.nextInt();
-//            System.out.println("Player 1 Make a move, ROW (0-7): ");
-//            row = reader.nextInt();
-//            updateBoard(1, new int[]{row, column});
-//            printBoard();
-        }
-    }
-
-    public void printBoard() {
-        String res = "  0   1   2   3   4   5   6   7";
+    public void printBoard(int[][] board) {
+        String res = "--------------------------------------------" +
+                "\n  X = AI         0 = Human" +
+                "\n  0   1   2   3   4   5   6   7";
         for(int i = 0; i < board.length; i++){
             res+="\n|";
             for(int j = 0; j < board[i].length; j++){
@@ -54,6 +41,7 @@ public class UIController {
             }
             res+="   "+i;
         }
+        res+="\n--------------------------------------------";
         System.out.println(res);
     }
 
@@ -64,7 +52,7 @@ public class UIController {
                 test[i][j] = -1;
             }
         }
-        UIController c = new UIController(test);
+//        UIController c = new UIController(test);
 //        c.updateBoard(0, new int[]{4,2});
 //        c.updateBoard(1, new int[]{4,3});
 //        c.updateBoard(0, new int[]{5,2});

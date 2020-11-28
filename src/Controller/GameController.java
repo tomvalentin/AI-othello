@@ -1,15 +1,17 @@
 package Controller;
 
 import Model.Move;
+import View.UIController;
 
 import java.util.ArrayList;
 
 public class GameController {
+    UIController controller;
 
     //States of the squares
     private final static int EMPTY = -1;
-    private final static int WHITE = 0;
-    private final static int BLACK = 1;
+    private final static int WHITE = 0; //AI
+    private final static int BLACK = 1; //HUMAN
 
     //Directions {x,y}
     private final static int[] UP = {0, -1};
@@ -34,8 +36,10 @@ public class GameController {
      * Initializes game and sets starting condition of the board
      */
     public void initialize() {
+        controller = new UIController();
+
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
                 board[i][j] = EMPTY;
 
             }
@@ -55,6 +59,35 @@ public class GameController {
         directions.add(LEFT);
         directions.add(UPLEFT);
 
+        gameThread();
+
+    }
+
+    public void gameThread(){
+        boolean validMove;
+        while(true){
+            //Human player
+            validMove = false;
+            while(validMove == false) { //prompt human and checks if move is valid
+                controller.printBoard(board);
+                Move humanMove = controller.promptPlayer();
+                if (makeMove(humanMove)){
+                    validMove = true;
+                }else{
+                    System.out.println("Move cannot be done, try again");
+                }
+
+            }
+
+
+            //prompt AI
+//            System.out.println("Player 1 Make a move, COLUMN (0-7): ");
+//            column = reader.nextInt();
+//            System.out.println("Player 1 Make a move, ROW (0-7): ");
+//            row = reader.nextInt();
+//            updateBoard(1, new int[]{row, column});
+//            printBoard();
+        }
     }
 
     /**
@@ -108,7 +141,6 @@ public class GameController {
      */
     private boolean checkIfAnyDirectionIsValid(Move move) {
         boolean hasFoundValidDirection = false;
-
         for (int[] direction : directions) {
             if (checkIfDirectionIsValid(move, direction)) {
                 hasFoundValidDirection = true;
@@ -136,7 +168,7 @@ public class GameController {
             nextX += direction[0];
             nextY += direction[1];
 
-            if (nextX > board.length || nextY > board.length) {
+            if (nextX >= board.length || nextY >= board.length) {
                 return false;
             } else if (nextX < 0 || nextY < 0) {
                 return false;
@@ -223,5 +255,10 @@ public class GameController {
             return WHITE;
         }
 
+    }
+
+    public static void main(String[] args) {
+        GameController gc = new GameController();
+        gc.initialize();
     }
 }
