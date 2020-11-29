@@ -126,12 +126,12 @@ public class GameController {
     public boolean makeMove(Move move) {
 
         if (move.getX() > board.length || move.getY() > board.length) {
+            System.out.println("Outside board");
             return false;
         } else if (move.getX() < 0 || move.getY() < 0) {
+            System.out.println("Outside board");
             return false;
-        } else if (board[move.getX()][move.getY()] != EMPTY) {
-            return false;
-        } else if (board[move.getX()][move.getY()] == getOpposite(move.getPlayer())) {
+        } else if (board[move.getY()][move.getX()] != EMPTY) {
             return false;
         }
 
@@ -180,15 +180,15 @@ public class GameController {
                 return false;
             } else if (nextX < 0 || nextY < 0) {
                 return false;
-            } else if (board[nextX][nextY] == EMPTY) {
+            } else if (board[nextY][nextX] == EMPTY) {
                 return false;
             }
 
 
-            if (board[nextX][nextY] == getOpposite(move.getPlayer())) {
+            if (board[nextY][nextX] == getOpposite(move.getPlayer())) {
                 hasFoundOpposite = true;
 
-            } else if (board[nextX][nextY] == move.getPlayer()) {
+            } else if (board[nextY][nextX] == move.getPlayer()) {
 
                 if (hasFoundOpposite) {
                     if(makeMove) {
