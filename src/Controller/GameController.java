@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class GameController {
     UIController controller;
+    AIPlayer ai;
 
     //States of the squares
     private final static int EMPTY = -1;
@@ -37,6 +38,7 @@ public class GameController {
      */
     public void initialize() {
         controller = new UIController();
+        ai = new AIPlayer(this);
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -79,8 +81,12 @@ public class GameController {
 
             }
 
+            controller.printBoard(board);
+
 
             //prompt AI
+            ai.makeMove();
+
 //            System.out.println("Player 1 Make a move, COLUMN (0-7): ");
 //            column = reader.nextInt();
 //            System.out.println("Player 1 Make a move, ROW (0-7): ");
@@ -129,7 +135,7 @@ public class GameController {
             return false;
         }
 
-        return checkIfAnyDirectionIsValid(move);
+        return checkIfAnyDirectionIsValid(move, true);
 
     }
 
@@ -139,11 +145,11 @@ public class GameController {
      * @param move current player and x,y position of the new disc
      * @return true if the player can flip discs in at least one direction
      */
-    private boolean checkIfAnyDirectionIsValid(Move move) {
+    private boolean checkIfAnyDirectionIsValid(Move move, boolean makeMove) {
         //System.out.println("Has called checkIfAnyDirectionIsValid with X: " + move.getX() + " Y: " + move.getY());
         boolean hasFoundValidDirection = false;
         for (int[] direction : directions) {
-            if (checkIfDirectionIsValid(move, direction)) {
+            if (checkIfDirectionIsValid(move, direction, makeMove)) {
                 hasFoundValidDirection = true;
             }
         }
@@ -159,7 +165,7 @@ public class GameController {
      * @param direction an array {x,y} where x,y is a number between -1 and 1 indicating the direction in x,y axis respectively
      * @return true if its possible to flip discs in this direction
      */
-    private boolean checkIfDirectionIsValid(Move move, int[] direction) {
+    private boolean checkIfDirectionIsValid(Move move, int[] direction, boolean makeMove) {
         //System.out.println("Has called checkIfDirectionIsValid with X: " + move.getX() + " Y: " + move.getY());
 
         boolean hasFoundOpposite = false;
@@ -185,7 +191,10 @@ public class GameController {
             } else if (board[nextX][nextY] == move.getPlayer()) {
 
                 if (hasFoundOpposite) {
-                    flipDiscs(move, direction);     //Probably needs to be moved somehow when AI is implemented
+                    if(makeMove) {
+                        flipDiscs(move, direction);     //Probably needs to be moved somehow when AI is implemented
+                    }
+
                     return true;
 
                 } else {
@@ -234,23 +243,44 @@ public class GameController {
      * @param player
      * @return
      */
-    public ArrayList<int[]> getAllAvailableMoves(int player) {
-        ArrayList<int[]> availableMoves = new ArrayList<>();
+    public ArrayList<Move> getAllAvailableMoves(int player) {
+        ArrayList<Move> availableMoves = new ArrayList<>();
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] != player) {
+                if (board[i][j] != EMPTY) {
                     continue;
                 }
 
-                if (checkIfAnyDirectionIsValid(new Move(player, i, j))) {
-                    int[] validMove = {i, j};
-                    availableMoves.add(validMove);
+                Move tempMove = new Move(player, i, j);
+
+                if (checkIfAnyDirectionIsValid(tempMove, false)) {
+                    availableMoves.add(tempMove);
                 }
             }
         }
 
         return availableMoves;
+    }
+
+    public int[][] copyBoard() {
+        int[][] boardCopy = new int[8][8];
+
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board.length; j++) {
+                boardCopy[i][j] = board[i][j];
+            }
+        }
+
+        return boardCopy;
+    }
+
+    public void setBoard(int[][] boardCopy) {
+        for(int i = 0; i < boardCopy.length; i++) {
+            for(int j = 0; j < boardCopy.length; j++) {
+                board[i][j] = boardCopy[i][j];
+            }
+        }
     }
 
     /**
