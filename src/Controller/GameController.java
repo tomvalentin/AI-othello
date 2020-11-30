@@ -84,15 +84,9 @@ public class GameController {
             controller.printBoard(board);
 
 
-            //prompt AI
+            //AI
             ai.makeMove();
 
-//            System.out.println("Player 1 Make a move, COLUMN (0-7): ");
-//            column = reader.nextInt();
-//            System.out.println("Player 1 Make a move, ROW (0-7): ");
-//            row = reader.nextInt();
-//            updateBoard(1, new int[]{row, column});
-//            printBoard();
         }
     }
 
@@ -131,7 +125,7 @@ public class GameController {
         } else if (move.getX() < 0 || move.getY() < 0) {
             System.out.println("Outside board");
             return false;
-        } else if (board[move.getY()][move.getX()] != EMPTY) {
+        } else if (board[move.getX()][move.getY()] != EMPTY) {
             return false;
         }
 
@@ -142,6 +136,7 @@ public class GameController {
     /**
      * Checks if any direction to flip discs is valid
      *
+     * @param makeMove boolean indicating whether to carry out the move or not
      * @param move current player and x,y position of the new disc
      * @return true if the player can flip discs in at least one direction
      */
@@ -161,8 +156,10 @@ public class GameController {
     /**
      * checks if the current player can flip discs in a certain direction
      *
+     *
      * @param move current player and x,y position of the new disc
      * @param direction an array {x,y} where x,y is a number between -1 and 1 indicating the direction in x,y axis respectively
+     * @param makeMove boolean indicating whether to carry out the move or not
      * @return true if its possible to flip discs in this direction
      */
     private boolean checkIfDirectionIsValid(Move move, int[] direction, boolean makeMove) {
@@ -180,15 +177,15 @@ public class GameController {
                 return false;
             } else if (nextX < 0 || nextY < 0) {
                 return false;
-            } else if (board[nextY][nextX] == EMPTY) {
+            } else if (board[nextX][nextY] == EMPTY) {
                 return false;
             }
 
 
-            if (board[nextY][nextX] == getOpposite(move.getPlayer())) {
+            if (board[nextX][nextY] == getOpposite(move.getPlayer())) {
                 hasFoundOpposite = true;
 
-            } else if (board[nextY][nextX] == move.getPlayer()) {
+            } else if (board[nextX][nextY] == move.getPlayer()) {
 
                 if (hasFoundOpposite) {
                     if(makeMove) {
@@ -217,13 +214,13 @@ public class GameController {
         //System.out.println("Has called flipDiscs with X: " + move.getX() + " Y: " + move.getY() + " Direction: " + direction[0] +  ", " + direction[1]);
 
         int newX = move.getX(), newY = move.getY();
-        board[newY][newX] = move.getPlayer();
+        board[newX][newY] = move.getPlayer();
 
         newX += direction[0];
         newY += direction[1];
 
-        while (board[newY][newX] == getOpposite(move.getPlayer())) {
-            board[newY][newX] = move.getPlayer();
+        while (board[newX][newY] == getOpposite(move.getPlayer())) {
+            board[newX][newY] = move.getPlayer();
 
             //System.out.println("Flipped disc on row: " + newX + " column: " + newY);
 
@@ -235,13 +232,11 @@ public class GameController {
 
     /**
      *
-     * ---needs to be changed---
-     *
      * returns list of all moves available to the player based on a new disc position
      * intended to be used at some point in the AI decision process
      *
      * @param player
-     * @return
+     * @return arrayList containing all moves available to the specific player
      */
     public ArrayList<Move> getAllAvailableMoves(int player) {
         ArrayList<Move> availableMoves = new ArrayList<>();
@@ -263,6 +258,10 @@ public class GameController {
         return availableMoves;
     }
 
+    /**
+     *
+     * @return a copy of the board
+     */
     public int[][] copyBoard() {
         int[][] boardCopy = new int[8][8];
 
@@ -275,7 +274,11 @@ public class GameController {
         return boardCopy;
     }
 
-    public void setBoard(int[][] boardCopy) {
+    /**
+     *
+     * @param boardCopy the board that will overwrite the current board
+     */
+    public void pasteBoard(int[][] boardCopy) {
         for(int i = 0; i < boardCopy.length; i++) {
             for(int j = 0; j < boardCopy.length; j++) {
                 board[i][j] = boardCopy[i][j];

@@ -6,7 +6,6 @@ import java.util.Scanner;
 
 public class UIController {
     Scanner reader = new Scanner(System.in);
-    //private int[][] board;
 
     /**
      * Takes an 2D array as input for the gameboard
@@ -31,7 +30,7 @@ public class UIController {
         for(int i = 0; i < board.length; i++){
             res+="\n|";
             for(int j = 0; j < board[i].length; j++){
-                int temp = board[i][j];
+                int temp = board[j][i];                 //---> only works with [j][i]... should be [i][j]?? <---
                 if(temp == 1)
                     res+=" O |";
                 else if(temp == 0)
@@ -45,18 +44,4 @@ public class UIController {
         System.out.println(res);
     }
 
-    public static void main(String[] args) {
-        int[][] test = new int[8][8];
-        for(int i = 0; i < test.length; i++){
-            for (int j = 0; j < test[i].length; j++){
-                test[i][j] = -1;
-            }
-        }
-//        UIController c = new UIController(test);
-//        c.updateBoard(0, new int[]{4,2});
-//        c.updateBoard(1, new int[]{4,3});
-//        c.updateBoard(0, new int[]{5,2});
-//        c.printBoard();
-
-    }
 }

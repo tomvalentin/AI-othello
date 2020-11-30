@@ -8,18 +8,41 @@ public class AIPlayer {
     private final static int DEPTH_LIMIT = 5;
     private GameController controller;
     private Move bestMove;
+    private int nbrOfNodes;
 
+    /**
+     *
+     * @param controller the GameController
+     */
     public AIPlayer(GameController controller) {
         this.controller = controller;
     }
 
+    /**
+     * initiates the ai decision making process and calls the makeMove method in the controller when that is finished.
+     */
     public void makeMove() {
-        maximizer(DEPTH_LIMIT, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        nbrOfNodes = 0;
+        max(DEPTH_LIMIT, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         controller.makeMove(bestMove);
+        System.out.println("AI has visited " + nbrOfNodes + " nodes");
+        System.out.println("AI searched with depth " + DEPTH_LIMIT);
+        System.out.println("AI made move: " + bestMove.getX() + ", " + bestMove.getY());
+
     }
 
-    private int maximizer(int depth, int alpha, int beta) {
+    /**
+     *
+     *
+     *
+     * @param depth depth of the nodes still to be visited. Is decreased by one for each method invocation
+     * @param alpha the current highest rating alpha rating
+     * @param beta the current lowest beta rating
+     * @return rating
+     */
+    private int max(int depth, int alpha, int beta) {
+        nbrOfNodes++;
 
         if (depth == 0) {
             return controller.countNbrOfDiscs(0);
@@ -31,11 +54,11 @@ public class AIPlayer {
 
             int[][] initialBoardState = controller.copyBoard();
 
-            controller.makeMove(move); //needs to made in temporary board or needs to be unmade
+            controller.makeMove(move);
 
-            int rating = minimizer(depth -1, alpha, beta);
+            int rating = min(depth -1, alpha, beta);
 
-            controller.setBoard(initialBoardState);
+            controller.pasteBoard(initialBoardState);
 
             if(rating > alpha) {
                 alpha = rating;
@@ -56,7 +79,15 @@ public class AIPlayer {
 
     }
 
-    private int minimizer(int depth, int alpha, int beta) {
+    /**
+     *
+     * @param depth depth of the nodes still to be visited. Is decreased by one for each method invocation
+     * @param alpha the current highest rating alpha rating
+     * @param beta the current lowest beta rating
+     * @return rating
+     */
+    private int min(int depth, int alpha, int beta) {
+        nbrOfNodes++;
 
         if (depth == 0) {
             return controller.countNbrOfDiscs(0);
@@ -68,13 +99,13 @@ public class AIPlayer {
 
             int[][] initialBoardState = controller.copyBoard();
 
-            controller.makeMove(move); //needs to made in temporary board or needs to be unmade
+            controller.makeMove(move);
 
-            int rating = maximizer(depth -1, alpha, beta);
+            int rating = max(depth -1, alpha, beta);
 
-            controller.setBoard(initialBoardState);
+            controller.pasteBoard(initialBoardState);
 
-            if(rating <= beta) {
+            if(rating < beta) {
                 beta = rating;
             }
 
