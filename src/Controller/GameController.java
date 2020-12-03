@@ -8,6 +8,8 @@ import java.util.ArrayList;
 public class GameController {
     UIController controller;
     AIPlayer ai;
+    private int humanScore = 2;
+    private int aiScore = 2;
 
     //States of the squares
     private final static int EMPTY = -1;
@@ -66,26 +68,62 @@ public class GameController {
     }
 
     public void gameThread(){
+        boolean game = true;
         boolean validMove;
-        while(true){
+        boolean roundMoveWasMade;               //to check if no move was made from both players = game over
+        ArrayList<Move> temp;
+        while(game){
+            roundMoveWasMade = false;           //reset each round
+
             //Human player
             validMove = false;
-            while(validMove == false) { //prompt human and checks if move is valid
-                controller.printBoard(board);
-                Move humanMove = controller.promptPlayer();
-                if (makeMove(humanMove)){
-                    validMove = true;
-                }else{
-                    System.out.println("Move cannot be done, try again");
+            temp = getAllAvailableMoves(1);     //check if any available moves to make for human player
+            if(!temp.isEmpty()) {               //there is move to make
+                while (validMove == false) {    //prompt human and checks if move is valid
+                    countScore();
+                    controller.printGameBoard(board, aiScore, humanScore);
+                    Move humanMove = controller.promptPlayer();
+                    if (makeMove(humanMove)) {
+                        validMove = true;
+                        roundMoveWasMade = true;
+                    } else {
+                        controller.printCasualGameAlert("Move is not a valid move, try again");
+                    }
                 }
-
+            }else{
+                controller.printGameAlert("No eligible move for human player, AI:s turn");
+                try {
+                    Thread.sleep(1000); //short break
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-            controller.printBoard(board);
+            countScore();
+            controller.printGameBoard(board, aiScore, humanScore);
 
 
             //AI
-            ai.makeMove();
+            temp = getAllAvailableMoves(0);     //check if any available moves to make for AI player
+            if(!temp.isEmpty()) {               //there is move to make
+                ai.makeMove();
+                roundMoveWasMade = true;
+            }else {
+                controller.printGameAlert("No eligible move for AI player, human:s turn");
+                try {
+                    Thread.sleep(1000); //short break
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(roundMoveWasMade==false){
+                game = false;                   //End main loop
+                countScore();                   //Count final score to see who won
+                if(humanScore>aiScore)
+                    controller.printGameOver("Human");
+                else
+                    controller.printGameOver("AI");
+            }
 
         }
     }
@@ -298,6 +336,19 @@ public class GameController {
             return WHITE;
         }
 
+    }
+
+    private void countScore(){
+        humanScore = 0;
+        aiScore = 0;
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[i].length; j++){
+                if(board[i][j] == 0)
+                    aiScore++;
+                else if(board[i][j] == 1)
+                    humanScore++;
+            }
+        }
     }
 
     public static void main(String[] args) {

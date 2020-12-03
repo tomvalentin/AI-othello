@@ -23,10 +23,13 @@ public class UIController {
         return new Move(1, column, row);
     }
 
-    public void printBoard(int[][] board) {
+    public void printGameBoard(int[][] board, int aiScore, int humanScore) {
         String res = "--------------------------------------------" +
-                "\n  X = AI         0 = Human" +
-                "\n  0   1   2   3   4   5   6   7";
+                "\n*                                           |" +
+                "\n*  X = AI         0 = Human                 |" +
+                "\n*  Discs: "+aiScore+"        Discs: "+humanScore+"                 |"+
+                " \n*                                           |" +
+                "\n  0   1   2   3   4   5   6   7             |";
         for(int i = 0; i < board.length; i++){
             res+="\n|";
             for(int j = 0; j < board[i].length; j++){
@@ -38,10 +41,30 @@ public class UIController {
                 else
                     res+="   |";
             }
-            res+="   "+i;
+            res+="   "+i+"       |";
         }
         res+="\n--------------------------------------------";
         System.out.println(res);
+    }
+
+    public void printGameAlert(String message){
+        String res =
+                "************ GAME ALERT ************\n" +
+                        "       " + message +"\n" +
+                        "************************************";
+    }
+
+    public void printCasualGameAlert(String message){
+        System.out.println("* INFO: "+message);
+    }
+
+    public void printGameOver(String player){
+        System.out.println(
+                "************** GAME OVER **************\n" +
+                        "           "+player+" player won! \n" +
+                        "***************************************"
+
+        );
     }
 
 }
