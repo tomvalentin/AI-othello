@@ -9,6 +9,7 @@ public class AIPlayer {
     private GameController controller;
     private Move bestMove;
     private int nbrOfNodes;
+    private int finalDepth;
 
     /**
      *
@@ -23,11 +24,13 @@ public class AIPlayer {
      */
     public void makeMove() {
         nbrOfNodes = 0;
+        finalDepth = DEPTH_LIMIT;
         max(DEPTH_LIMIT, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
         controller.makeMove(bestMove);
+        finalDepth = DEPTH_LIMIT - finalDepth;
         System.out.println("AI has visited " + nbrOfNodes + " nodes");
-        System.out.println("AI searched with depth " + DEPTH_LIMIT);
+        System.out.println("AI searched with depth " + finalDepth);
         System.out.println("AI made move: " + bestMove.getX() + ", " + bestMove.getY());
 
     }
@@ -44,9 +47,15 @@ public class AIPlayer {
     private int max(int depth, int alpha, int beta) {
         nbrOfNodes++;
 
+
+        if(depth < finalDepth) {
+            finalDepth = depth;
+        }
+
         if (depth == 0) {
             return controller.countNbrOfDiscs(0);
         }
+
 
         ArrayList<Move> availableMoves = controller.getAllAvailableMoves(0);
 
@@ -88,6 +97,10 @@ public class AIPlayer {
      */
     private int min(int depth, int alpha, int beta) {
         nbrOfNodes++;
+
+        if(depth < finalDepth) {
+            finalDepth = depth;
+        }
 
         if (depth == 0) {
             return controller.countNbrOfDiscs(0);
